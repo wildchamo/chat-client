@@ -28,7 +28,7 @@
  * - isLoading: Estado de carga durante las operaciones
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MessageList } from "@/components/MessageList";
 import { ChatInput } from "@/components/ChatInput";
 import { chatApi } from "@/lib/api";

@@ -1,8 +1,6 @@
 // Importación de tipos necesarios para el chat y respuestas de imágenes
 import { Message, ChatResponse, ImageGenerationResponse } from '@/types/chat';
-
-
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { sendChatMessage } from './server-actions';
 
 
 /**
@@ -39,21 +37,8 @@ export const chatApi = {
     // Acepta un array de mensajes y una función opcional para manejar chunks de respuesta
     sendMessage: async (messages: Message[], onChunk: (chunk: ChatResponse) => void): Promise<ChatResponse> => {
 
-        const context = getCloudflareContext();
-
-        const env = context.env;
-
-        console.log('context', context);
-        console.log('env', env);
-
-        // Si hay función de callback, configura streaming de datos
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api'}/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ messages }),
-        });
+        // Usar la server action para enviar el mensaje
+        const response = await sendChatMessage(messages);
 
         // Configuración para lectura de stream de datos
         const reader = response.body?.getReader();
