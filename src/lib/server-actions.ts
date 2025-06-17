@@ -1,6 +1,6 @@
 'use server';
 
-// import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { Message } from '@/types/chat';
 
 /**
@@ -10,18 +10,18 @@ import { Message } from '@/types/chat';
 export async function sendChatMessage(messages: Message[]) {
     try {
         // Obtener el contexto de Cloudflare
-        // const { env } = getCloudflareContext();
-        // const { NEXTJS_AI } = env;
+        const { env } = getCloudflareContext();
+
 
         // console.log('Server env:', NEXTJS_AI);
 
 
-        const AI_URL = process.env.NEXTJS_AI_API;
+        const AI_URL = env.NEXTJS_AI_API;
         if (!AI_URL) {
             throw new Error('NEXTJS_AI_API environment variable is not defined');
         }
 
-        const response = await fetch(`${AI_URL}/chat`, {
+        const response = await fetch(`${AI_URL}/api/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,13 +29,15 @@ export async function sendChatMessage(messages: Message[]) {
             body: JSON.stringify({ messages }),
         });
 
-        console.log('response:', response);
+        const data = await response.json();
+
+        console.log('data:', data);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return response;
+        return data;
     } catch (error) {
         console.error('Error in sendChatMessage server action:', error);
         throw error;
