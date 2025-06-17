@@ -1,6 +1,10 @@
 // Importación de tipos necesarios para el chat y respuestas de imágenes
 import { Message, ChatResponse, ImageGenerationResponse } from '@/types/chat';
 
+
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
+
 /**
  * @fileoverview API Client para la comunicación con el backend de Platzi Vision
  * 
@@ -29,9 +33,19 @@ import { Message, ChatResponse, ImageGenerationResponse } from '@/types/chat';
  */
 
 export const chatApi = {
+
+
     // Función principal para enviar mensajes al API
     // Acepta un array de mensajes y una función opcional para manejar chunks de respuesta
     sendMessage: async (messages: Message[], onChunk: (chunk: ChatResponse) => void): Promise<ChatResponse> => {
+
+        const context = getCloudflareContext();
+
+        const env = context.env;
+
+        console.log('context', context);
+        console.log('env', env);
+
         // Si hay función de callback, configura streaming de datos
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api'}/chat`, {
             method: 'POST',
