@@ -1,8 +1,8 @@
 "use client";
 
 // Importación de tipos necesarios para el chat y respuestas de imágenes
-import { Message, ChatResponse, ImageGenerationResponse } from '@/types/chat';
-
+import { Message, ChatResponse } from '@/types/chat';
+// ImageGenerationResponse
 
 /**
  * @fileoverview API Client para la comunicación con el backend de Platzi Vision
@@ -38,7 +38,6 @@ export const chatApi = {
 
         const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
 
-        console.log(AI_URL);
         if (!AI_URL) {
             throw new Error("NEXTJS_AI_API environment variable is not defined");
         }

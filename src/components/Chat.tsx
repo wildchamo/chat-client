@@ -65,25 +65,20 @@ export const Chat = () => {
       setStreamingMessage(""); // Limpiar el mensaje en transmisión
 
       // Enviar el mensaje a través de la API
-      await chatApi.sendMessage([...messages, newMessage], {
-        onStreamingChunk: (content) => {
-          setStreamingMessage(content);
-        },
-        onGeneratingImage: () => {
+      await chatApi.sendMessage([...messages, newMessage], (chunk) => {
+        if (chunk.status === "streaming" && chunk.content) {
+          setStreamingMessage(chunk.content);
+        } else if (chunk.status === "generating_image") {
+          // Add a temporary message while the image is being generated
           setStreamingMessage("Generando imagen...");
-        },
-        onDone: (content) => {
+        } else if (chunk.status === "done" && chunk.content) {
           const assistantMessage: Message = {
             role: "assistant",
-            content: content,
+            content: chunk.content,
           };
           setMessages((prev) => [...prev, assistantMessage]);
           setStreamingMessage("");
-        },
-        onError: (error) => {
-          console.error("Error en el chat:", error);
-          setStreamingMessage("");
-        },
+        }
       });
     } catch (error) {
       console.error("Error sending message:", error); // Manejo de errores
