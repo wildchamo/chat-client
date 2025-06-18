@@ -51,12 +51,14 @@ export const MessageList = ({
           >
             {/* Renderizado del contenido markdown del mensaje */}
             <Markdown
-              components={{
-                // Configuración personalizada para imágenes en markdown
-                img: ({ node, ...props }) => {
-                  return <img {...props} className="rounded-xl my-2.5" />;
-                },
-              }}
+              components={
+                {
+                  // Configuración personalizada para imágenes en markdown
+                  // img: ({ node, ...props }) => {
+                  //   return <img {...props} className="rounded-xl my-2.5" />;
+                  // },
+                }
+              }
             >
               {message.content}
             </Markdown>

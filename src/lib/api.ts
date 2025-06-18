@@ -104,6 +104,7 @@ export const chatApi = {
                     } catch (e) {
                         // Solo logea el error si no es un JSON vacío o malformado esperado
                         if (jsonStr !== '[DONE]' && jsonStr.length > 0) {
+                            console.log(e);
                             console.warn('Failed to parse SSE chunk (may be incomplete):', jsonStr);
                         }
                     }

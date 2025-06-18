@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Platzi Vision",
-  description: "Platzi Vision",
+  title: "Tiny 0.1",
+  description: "Tiny 0.1",
 };
 
 export default function RootLayout({
