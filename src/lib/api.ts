@@ -1,6 +1,7 @@
+"use client";
+
 // Importación de tipos necesarios para el chat y respuestas de imágenes
 import { Message, ChatResponse, ImageGenerationResponse } from '@/types/chat';
-import { sendChatMessage } from './server-actions';
 
 
 /**
@@ -31,14 +32,24 @@ import { sendChatMessage } from './server-actions';
  */
 
 export const chatApi = {
-
-
     // Función principal para enviar mensajes al API
     // Acepta un array de mensajes y una función opcional para manejar chunks de respuesta
     sendMessage: async (messages: Message[], onChunk: (chunk: ChatResponse) => void): Promise<ChatResponse> => {
 
-        // Usar la server action para enviar el mensaje
-        const response = await sendChatMessage(messages);
+        const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
+
+        console.log(AI_URL);
+        if (!AI_URL) {
+            throw new Error("NEXTJS_AI_API environment variable is not defined");
+        }
+
+        const response = await fetch(`${AI_URL}/api/chat`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ messages }),
+        });
 
         // Configuración para lectura de stream de datos
         const reader = response.body?.getReader();
