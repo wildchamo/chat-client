@@ -54,6 +54,7 @@ export const chatApi = {
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let accumulatedMessage = ''; // Almacena el mensaje completo
+        let buffer = ''; // Buffer para líneas incompletas
 
         if (!reader) throw new Error('Failed to get response reader');
 
@@ -63,33 +64,48 @@ export const chatApi = {
             const { done, value } = await reader.read();
             if (done) break;
 
-            // Decodifica y procesa cada chunk
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
+            // Decodifica y agrega al buffer
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
 
-            // Procesa cada línea del chunk
+            // Mantén la última línea en el buffer si no termina en \n
+            buffer = lines.pop() || '';
+
+            // Procesa cada línea completa
             for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const jsonStr = line.slice(6);
+                const trimmedLine = line.trim();
+
+                // Ignora líneas vacías
+                if (!trimmedLine) continue;
+
+                // Maneja la señal de finalización
+                if (trimmedLine === 'data: [DONE]') {
+                    onChunk({ content: accumulatedMessage, status: 'done' });
+                    return { content: accumulatedMessage, status: 'done' };
+                }
+
+                // Procesa líneas de datos SSE
+                if (trimmedLine.startsWith('data: ')) {
+                    const jsonStr = trimmedLine.slice(6);
+
+                    // Ignora líneas vacías de datos
+                    if (!jsonStr || jsonStr === '') continue;
+
                     try {
                         const data = JSON.parse(jsonStr);
-                        console.log('Parsed SSE data:', data);
 
-                        // Maneja diferentes estados de la respuesta
-                        if (data.status === 'streaming' && data.content) {
-                            // Acumula el contenido del mensaje y notifica
+                        // El servidor envía { content: "texto" } para cada chunk
+                        if (data.content) {
+                            // Acumula el contenido del mensaje
                             accumulatedMessage += data.content;
+                            // Notifica el contenido acumulado
                             onChunk({ content: accumulatedMessage, status: 'streaming' });
-                        } else if (data.status === 'generating_image') {
-                            // Notifica cuando comienza la generación de imagen
-                            onChunk({ content: 'Generando imagen...', status: 'generating_image' });
-                        } else if (data.status === 'done') {
-                            // Finaliza el streaming y retorna el mensaje completo
-                            onChunk({ content: accumulatedMessage, status: 'done' });
-                            return { content: accumulatedMessage, status: 'done' };
                         }
                     } catch (e) {
-                        console.error('Failed to parse SSE chunk:', e);
+                        // Solo logea el error si no es un JSON vacío o malformado esperado
+                        if (jsonStr !== '[DONE]' && jsonStr.length > 0) {
+                            console.warn('Failed to parse SSE chunk (may be incomplete):', jsonStr);
+                        }
                     }
                 }
             }

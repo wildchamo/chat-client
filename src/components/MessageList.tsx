@@ -50,7 +50,7 @@ export const MessageList = ({
             })}
           >
             {/* Renderizado del contenido markdown del mensaje */}
-            {/* <Markdown
+            <Markdown
               components={{
                 // Configuración personalizada para imágenes en markdown
                 img: ({ node, ...props }) => {
@@ -59,7 +59,7 @@ export const MessageList = ({
               }}
             >
               {message.content}
-            </Markdown> */}
+            </Markdown>
 
             {/* Renderizado de imágenes adjuntas al mensaje */}
             {message.image_data && (
