@@ -18,6 +18,13 @@
 	"observability": {
 		"enabled": true
 	},
+
+	"r2_buckets": [
+		{
+		  "bucket_name": "ai-images",
+		  "binding": "NEXT_INC_R2_BUCKET_IMAGES"
+		}
+	  ]
 	// "services": [{ "binding": "NEXTJS_AI", "service": "openai-learn" }]
 	/**
 	 * Smart Placement

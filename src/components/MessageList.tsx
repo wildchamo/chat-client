@@ -69,9 +69,9 @@ export const MessageList = ({
                 {/* Manejo de múltiples imágenes o imagen única */}
                 {Array.isArray(message.image_data) ? (
                   message.image_data.map((imgData, imgIndex) => (
-                    <Image
+                    <img
                       key={imgIndex}
-                      src={`data:image/jpeg;base64,${imgData}`}
+                      src={`${imgData}`}
                       alt={`Uploaded image ${imgIndex + 1}`}
                       width={300}
                       height={300}
@@ -79,8 +79,8 @@ export const MessageList = ({
                     />
                   ))
                 ) : (
-                  <Image
-                    src={`data:image/jpeg;base64,${message.image_data}`}
+                  <img
+                    src={`${message.image_data}`}
                     alt="Uploaded image"
                     width={300}
                     height={300}

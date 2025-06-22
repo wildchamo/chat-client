@@ -1,6 +1,7 @@
 // Importación de hooks de React y componentes de iconos
 import { useState, useRef } from "react";
 import { ImageIcon, Loader2, SendHorizonal } from "lucide-react";
+import { submitImages } from "@/lib/images";
 
 // Definición de tipos para las props del componente
 interface ChatInputProps {
@@ -34,14 +35,14 @@ export const ChatInput = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Convertir la imagen a base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = (reader.result as string).split(",")[1];
-        onAddImage(base64String);
+      // Subir la imagen inmediatamente al servicio AI
+      try {
+        const { url } = (await submitImages(file)) as { url: string };
+        onAddImage(url);
         setMessage("");
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Upload error", err);
+      }
     }
   };
 
@@ -53,7 +54,7 @@ export const ChatInput = ({
           {pendingImages.map((imageData, index) => (
             <div key={index} className="relative min-w-[100px] h-[100px]">
               <img
-                src={`data:image/jpeg;base64,${imageData}`}
+                src={imageData.startsWith('http') ? imageData : `data:image/jpeg;base64,${imageData}`}
                 alt={`Preview ${index + 1}`}
                 className="w-full h-full object-cover rounded-lg"
               />

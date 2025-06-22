@@ -31,7 +31,7 @@
 import { useState } from "react";
 import { MessageList } from "@/components/MessageList";
 import { ChatInput } from "@/components/ChatInput";
-import { chatApi } from "@/lib/api";
+import { chatApi } from "@/lib/chat";
 import { Message } from "@/types/chat";
 
 export const Chat = () => {

@@ -7,6 +7,7 @@ declare namespace Cloudflare {
         ASSETS: Fetcher;
         NEXTJS_AI: OpenNextAi;
         NEXT_PUBLIC_AI_URL: string;
+        NEXT_INC_R2_BUCKET_IMAGES: R2Bucket;
     }
 }
 interface CloudflareEnv extends Cloudflare.Env { }
