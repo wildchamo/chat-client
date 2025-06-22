@@ -35,6 +35,27 @@ export const chatApi = {
     // Función principal para enviar mensajes al API
     // Acepta un array de mensajes y una función opcional para manejar chunks de respuesta
     sendMessage: async (messages: Message[], onChunk: (chunk: ChatResponse) => void): Promise<ChatResponse> => {
+        // Transformar mensajes al formato esperado por OpenAI si contienen imágenes
+        type ContentPart = { type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } };
+
+        const transformed = messages.map((m) => {
+            // Si el mensaje tiene image_data, construimos content como array
+            if (m.image_data && m.image_data.length > 0) {
+                const parts: ContentPart[] = [];
+                // Añadimos cada imagen primero
+                for (const url of m.image_data) {
+                    parts.push({ type: 'image_url', image_url: { url } });
+                }
+                // Añadimos el texto si existe
+                if (m.content && m.content.trim()) {
+                    parts.push({ type: 'text', text: m.content });
+                }
+                return { role: m.role, content: parts } as unknown;
+            }
+            // Caso sin imágenes, enviamos string simple
+            return m;
+        });
+
 
         const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
 
@@ -47,7 +68,7 @@ export const chatApi = {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ messages }),
+            body: JSON.stringify({ messages: transformed }),
         });
 
         // Configuración para lectura de stream de datos

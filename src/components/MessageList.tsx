@@ -1,6 +1,5 @@
 // Importaciones necesarias para el componente
 import { Message } from "@/types/chat";
-import Image from "next/image";
 import { clsx } from "clsx";
 import Markdown from "react-markdown";
 import { useRef, useEffect } from "react";
@@ -73,8 +72,6 @@ export const MessageList = ({
                       key={imgIndex}
                       src={`${imgData}`}
                       alt={`Uploaded image ${imgIndex + 1}`}
-                      width={300}
-                      height={300}
                       className="rounded-xl"
                     />
                   ))
@@ -82,8 +79,6 @@ export const MessageList = ({
                   <img
                     src={`${message.image_data}`}
                     alt="Uploaded image"
-                    width={300}
-                    height={300}
                     className="rounded-xl"
                   />
                 )}
